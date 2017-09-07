@@ -1,10 +1,7 @@
-
-If (($PSVersionTable.ContainsKey('PSEdition')) -and ($PSVersionTable.PSEdition -eq 'Core') -or ($PSVersionTable.PSVersion.Major -le 2)) {
-    return
-}
-Else {
-    # Work around bug in PowerShell 2 type loading...
-    Microsoft.PowerShell.Core\Import-Module -Name "${Script:PesterRoot}\lib\Gherkin.dll"
+﻿if (($PSVersionTable.ContainsKey('PSEdition')) -and ($PSVersionTable.PSEdition -eq 'Core')) {
+    Add-Type -Path "${Script:PesterRoot}\lib\Gherkin.dll"
+} else {
+    Microsoft.PowerShell.Core\Import-Module -Name "${Script:PesterRoot}\lib\legacy\Gherkin.dll"
 }
 
 $GherkinSteps = @{}
@@ -331,7 +328,7 @@ The folder which contains step files
     [CmdletBinding()]
     param(
 
-    [Alias("PSPath")]
+        [Alias("PSPath")]
         [Parameter(Mandatory=$True, Position=0, ValueFromPipelineByPropertyName=$True)]
         $StepPath,
 
