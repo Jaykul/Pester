@@ -1,7 +1,11 @@
-﻿if (($PSVersionTable.ContainsKey('PSEdition')) -and ($PSVersionTable.PSEdition -eq 'Core')) {
-    Add-Type -Path "${Script:PesterRoot}\lib\Gherkin.dll"
+﻿if($PSVersionTable.PSVersion.Major -le 2) {
+    return # Gherkin may not support PS2
+}
+
+if (($PSVersionTable.ContainsKey('PSEdition')) -and ($PSVersionTable.PSEdition -eq 'Core')) {
+    Add-Type -Path "${Script:PesterRoot}\lib\core\Gherkin.dll"
 } else {
-    Microsoft.PowerShell.Core\Import-Module -Name "${Script:PesterRoot}\lib\legacy\Gherkin.dll"
+    Import-Module -Name "${Script:PesterRoot}\lib\legacy\Gherkin.dll"
 }
 
 $GherkinSteps = @{}

@@ -1,5 +1,4 @@
 Set-StrictMode -Version Latest
-If (($PSVersionTable.ContainsKey('PSEdition')) -and ($PSVersionTable.PSEdition -eq 'Core') -or ($PSVersionTable.PSVersion.Major -le 2)) { return }
 
 $scriptRoot = Split-Path (Split-Path $MyInvocation.MyCommand.Path)
 
@@ -24,7 +23,7 @@ $job = Start-Job -ArgumentList $scriptRoot -ScriptBlock {
 $gherkin = $job | Wait-Job | Receive-Job
 Remove-Job $job
 
-Describe 'Invoke-Gherkin' {
+Describe 'Invoke-Gherkin' -Tag 'Gherkin' {
     It 'Works on the Validator example' {
         $gherkin.Results.PassedCount | Should Be $gherkin.Results.TotalCount
     }
