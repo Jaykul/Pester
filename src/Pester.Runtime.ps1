@@ -256,6 +256,24 @@ function New-Block {
 
                 foreach ($private:______current in $private:______parameters.Context.GetEnumerator()) {
                     $ExecutionContext.SessionState.PSVariable.Set($private:______current.Key, $private:______current.Value)
+
+                    # Describe -InModule Magics
+                    if ($private:______current.Key -eq "Module" -and $private:______current.Value -is [System.Management.Automation.PSModuleInfo]) {
+                        $ModuleName = $private:______current.Value.Name
+                        if ($DefaultParameters = $ExecutionContext.SessionState.PSVariable.GetValue("PSDefaultParameterValues")) {
+                            $DefaultParameters["Mock:ModuleName"] = $ModuleName
+                            $DefaultParameters["Assert-MockCalled:ModuleName"] = $ModuleName
+                            $DefaultParameters["Assert-VerifiableMock:ModuleName"] = $ModuleName
+                        }
+                        else {
+                            $DefaultParameters = @{
+                                "Mock:ModuleName" = $ModuleName
+                                "Assert-MockCalled:ModuleName" = $ModuleName
+                                "Assert-VerifiableMock:ModuleName" = $ModuleName
+                            }
+                            $ExecutionContext.SessionState.PSVariable.Set("PSDefaultParameterValues", $DefaultParameters)
+                        }
+                    }
                 }
 
                 $private:______current = $null

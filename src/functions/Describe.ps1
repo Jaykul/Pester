@@ -85,6 +85,8 @@ https://pester.dev/docs/usage/testdrive
         [Parameter(Mandatory = $true, Position = 0)]
         [string] $Name,
 
+        [string]$InModule,
+
         [Alias('Tags')]
         [string[]] $Tag = @(),
 
@@ -116,6 +118,18 @@ https://pester.dev/docs/usage/testdrive
             }
             else {
                 # @() or $null is provided do nothing
+            }
+        }
+        elseif ($PSBoundParameters.ContainsKey('InModule')) {
+            if ($Module = Get-Module $InModule) {
+                $Data = @{
+                    Module = $Module
+                    Command = . $Module { param($Name) Get-Command $Name } -Name $Name
+                }
+                New-Block -Name $Name -ScriptBlock $Fixture -StartLine $MyInvocation.ScriptLineNumber -Tag $Tag -FrameworkData @{ CommandUsed = 'Describe'; WrittenToScreen = $false } -Focus:$Focus -Skip:$Skip -Data $Data
+            }
+            else {
+                throw "Module '$InModule' not found."
             }
         }
         else {
